@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_social_media/screens/home.dart';
 
 void main() {
   runApp(MyApp());
@@ -9,13 +10,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Social Media',
-      home: Container(
-        child: Text('Flutter Social Media'),
-      ),
+      home: Home(),
     );
   }
 }
-
-// WidgetsFlutterBinding.ensureInitialized();
-// Firebase
-// await Firebase.initializeApp();
