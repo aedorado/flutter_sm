@@ -11,6 +11,8 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   bool auth = false;
+  int pageIndex = 0;
+  late PageController pageController;
 
   final gsi = GoogleSignIn();
 
@@ -30,8 +32,9 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    gsi.onCurrentUserChanged.listen((account) => handleSignIn(account));
     gsi.signInSilently().then((account) => handleSignIn(account));
+    pageController = PageController(initialPage: this.pageIndex);
+    gsi.onCurrentUserChanged.listen((account) => handleSignIn(account));
   }
 
   Widget buildUnauthScreen() {
@@ -41,7 +44,7 @@ class _HomeState extends State<Home> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Colors.amber, Colors.purple],
+            colors: [Theme.of(context).primaryColor, Theme.of(context).accentColor],
           ),
         ),
         alignment: Alignment.center,
@@ -74,13 +77,42 @@ class _HomeState extends State<Home> {
 
   buildAuthScreen() {
     return Scaffold(
-      body: Container(
-        alignment: Alignment.center,
-        child: ElevatedButton(
-            onPressed: () {
-              gsi.signOut();
-            },
-            child: Text('Logout')),
+      appBar: AppBar(
+        title: Text('Flutter Gram'),
+      ),
+      body: PageView(
+        controller: pageController,
+        children: [
+          Text('Timeline'),
+          Text('Search'),
+          Text('Post'),
+          Text('Notifications'),
+          Text('Profile'),
+        ],
+        physics: NeverScrollableScrollPhysics(),
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: this.pageIndex,
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: Theme.of(context).primaryColor,
+        onTap: (index) {
+          setState(() {
+            this.pageIndex = index;
+          });
+          pageController.animateToPage(index, duration: Duration(milliseconds: 300), curve: Curves.easeIn);
+        },
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Timeline'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+          BottomNavigationBarItem(
+              icon: Icon(
+                Icons.photo_camera,
+                size: 32,
+              ),
+              label: 'Upload'),
+          BottomNavigationBarItem(icon: Icon(Icons.notifications), label: 'Notifications'),
+          BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Profile'),
+        ],
       ),
     );
   }
